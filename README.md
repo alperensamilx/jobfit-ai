@@ -1,68 +1,68 @@
 # JobFit AI
 
-CV'ni (PDF) ve bir iş ilanının metnini yükle — bir LLM (Groq üzerinden Llama 3.3 70B) ikisini karşılaştırıp yapılandırılmış bir uyum raporu (0-100 skor, güçlü yönler, eksik beceriler, kısa özet) üretsin.
+Upload your CV (PDF) and a job posting's text — an LLM (Llama 3.3 70B via Groq) compares the two and produces a structured fit report (0-100 score, strengths, missing skills, short summary).
 
-## Nasıl çalışır
+## How it works
 
-1. CV'ni PDF olarak yükle, iş ilanının tam metnini yapıştır.
-2. `pypdf` ile PDF'ten metin bellekte çıkarılır (dosyanın kendisi hiç diske/veritabanına yazılmaz).
-3. Çıkarılan metin + ilan metni, modele **tool/function calling** ile gönderilir — model serbest metin yerine tanımlı bir şemaya (`match_score`, `strengths`, `missing_skills`, `summary`) uyan yapılandırılmış bir yanıt üretmeye zorlanır. Bu, "JSON döndür" diye prompt'ta rica edip regex ile parse etmeye kıyasla çok daha güvenilir bir yöntemdir.
-4. Sonuç veritabanına kaydedilir, geçmişten tekrar görüntülenebilir.
+1. Upload your CV as a PDF, paste the full job posting text.
+2. `pypdf` extracts the text from the PDF in memory (the file itself is never written to disk/database).
+3. The extracted text + job description are sent to the model via **tool/function calling** — instead of free-form text, the model is forced to produce a structured response matching a defined schema (`match_score`, `strengths`, `missing_skills`, `summary`). This is far more reliable than asking for JSON in a prompt and parsing it with regex.
+4. The result is saved to the database and can be revisited from the history page.
 
-## Ekran Görüntüleri
+## Screenshots
 
-> `screenshots/` klasörüne eklenecek.
+> To be added to the `screenshots/` folder.
 
-## Teknoloji
+## Tech Stack
 
 - **Backend**: Django 4.2
-- **PDF işleme**: pypdf (bellekte, dosya diske yazılmadan)
-- **AI**: Groq API (`llama-3.3-70b-versatile`, ücretsiz katman, kredi kartı gerekmez), tool calling ile yapılandırılmış JSON çıktı
-- **Arayüz**: Bootstrap 5 (CDN)
-- **Veritabanı**: SQLite
+- **PDF processing**: pypdf (in memory, file never written to disk)
+- **AI**: Groq API (`llama-3.3-70b-versatile`, free tier, no credit card required), structured JSON output via tool calling
+- **UI**: Bootstrap 5 (CDN)
+- **Database**: SQLite
 
-## Kurulum
+## Setup
 
 ```bash
-git clone <bu-repo>
+git clone <this-repo>
 cd jobfit-ai
 python3 -m venv venv
 source venv/bin/activate
 pip install -r requirements.txt
 cp .env.example .env
-# .env dosyasını aç, GROQ_API_KEY'i kendi anahtarınla değiştir
-# (ücretsiz anahtar: https://console.groq.com/keys — kredi kartı gerekmez)
+# open .env and replace GROQ_API_KEY with your own key
+# (free key: https://console.groq.com/keys — no credit card required)
 python manage.py migrate
 python manage.py runserver
 ```
 
-`http://127.0.0.1:8000` adresine git, bir CV PDF'i ve bir iş ilanı metni ile dene.
+Visit `http://127.0.0.1:8000` and try it out with a CV PDF and a job posting.
 
-## Testler
+## Tests
 
 ```bash
 python manage.py test matcher
 ```
 
-9 test: PDF metin çıkarma (geçerli ve bozuk dosyalarla), form doğrulama, tam analiz akışı, skor sınırlama (0-100), sonuç/geçmiş sayfaları. Modele **hiçbir test sırasında gerçekten gidilmez** — `analyze_fit` fonksiyonu mock'lanır, böylece testler ücretsiz, hızlı ve deterministik çalışır.
+9 tests: PDF text extraction (with valid and corrupted files), form validation, the full analysis flow, score clamping (0-100), and the result/history pages. The model API is **never actually called during tests** — `analyze_fit` is mocked, so the tests run free, fast, and deterministic.
 
-## Neden Celery/async yok?
+## Why no Celery/async?
 
-OrderLens'ten (başka bir projem) farklı olarak burada tek bir API çağrısı yapılıyor — birkaç saniye süren, pandas/matplotlib gibi ağır olmayan bir işlem. Bu yüzden bilinçli olarak senkron request/response yeterli görüldü; gereksiz karmaşıklık eklenmedi.
+Unlike OrderLens (another one of my projects), this makes a single API call — a few seconds, not a heavy operation like pandas/matplotlib. So a synchronous request/response was deliberately kept simple; no unnecessary complexity was added.
 
-## Proje Yapısı
+## Project Structure
 
 ```
 matcher/
-  models.py        # Analysis modeli (cv_text, job_description, match_score, strengths, missing_skills, summary)
-  pdf_utils.py      # PDF'ten metin çıkarma (bellekte, hata yönetimli)
-  groq_client.py    # Groq API entegrasyonu — tool calling ile yapılandırılmış çıktı
-  views.py          # analyze / result / history view'ları
-  forms.py          # yükleme formu (PDF uzantı/boyut doğrulaması)
-  tests.py          # mock'lanmış API ile test paketi
-  templates/        # Bootstrap tabanlı şablonlar
+  models.py        # Analysis model (cv_text, job_description, match_score, strengths, missing_skills, summary)
+  pdf_utils.py      # PDF text extraction (in memory, with error handling)
+  groq_client.py    # Groq API integration — structured output via tool calling
+  views.py          # analyze / result / history views
+  forms.py          # upload form (PDF extension/size validation)
+  tests.py          # test suite with the API mocked out
+  templates/        # Bootstrap-based templates
 ```
 
-## Lisans
+## License
 
 MIT

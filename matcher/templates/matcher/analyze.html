@@ -1,10 +1,10 @@
 {% extends 'matcher/base.html' %}
-{% block title %}JobFit AI - Yeni Analiz{% endblock %}
+{% block title %}JobFit AI - New Analysis{% endblock %}
 {% block content %}
     <div class="card shadow-sm">
         <div class="card-body">
-            <h1 class="h4 mb-3">CV'ni bir iş ilanıyla karşılaştır</h1>
-            <p class="text-muted">CV'ni (PDF) yükle, iş ilanının metnini yapıştır — yapay zeka uyum skorunu, güçlü yönlerini ve eksik becerilerini analiz etsin.</p>
+            <h1 class="h4 mb-3">Compare your CV against a job posting</h1>
+            <p class="text-muted">Upload your CV (PDF), paste the job posting text — the AI will analyze your fit score, strengths, and missing skills.</p>
 
             {% if form.non_field_errors %}
                 <div class="alert alert-danger">{{ form.non_field_errors }}</div>
@@ -22,7 +22,7 @@
                     {{ form.job_description }}
                     {% if form.job_description.errors %}<div class="text-danger small mt-1">{{ form.job_description.errors }}</div>{% endif %}
                 </div>
-                <button type="submit" class="btn btn-primary">Analiz Et</button>
+                <button type="submit" class="btn btn-primary">Analyze</button>
             </form>
         </div>
     </div>

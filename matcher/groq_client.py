@@ -68,13 +68,13 @@ def analyze_fit(cv_text, job_description):
             tool_choice={'type': 'function', 'function': {'name': 'submit_analysis'}},
         )
     except APIError as exc:
-        raise AnalysisError(f'Groq API isteği başarısız oldu: {exc}') from exc
+        raise AnalysisError(f'The Groq API request failed: {exc}') from exc
 
     tool_calls = response.choices[0].message.tool_calls
     if not tool_calls:
-        raise AnalysisError('Model yapılandırılmış bir yanıt döndürmedi.')
+        raise AnalysisError('The model did not return a structured response.')
 
     try:
         return json.loads(tool_calls[0].function.arguments)
     except json.JSONDecodeError as exc:
-        raise AnalysisError('Model yanıtı yapılandırılmış JSON olarak ayrıştırılamadı.') from exc
+        raise AnalysisError('The model response could not be parsed as structured JSON.') from exc

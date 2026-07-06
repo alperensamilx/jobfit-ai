@@ -1,7 +1,7 @@
 {% extends 'matcher/base.html' %}
-{% block title %}JobFit AI - Geçmiş{% endblock %}
+{% block title %}JobFit AI - History{% endblock %}
 {% block content %}
-    <h1 class="h4 mb-3">Geçmiş Analizler</h1>
+    <h1 class="h4 mb-3">Past Analyses</h1>
 
     {% if analyses %}
         <div class="list-group">
@@ -15,12 +15,12 @@
                         {% if analysis.match_score >= 70 %}bg-success
                         {% elif analysis.match_score >= 40 %}bg-warning text-dark
                         {% else %}bg-danger{% endif %}">
-                        %{{ analysis.match_score }}
+                        {{ analysis.match_score }}%
                     </span>
                 </a>
             {% endfor %}
         </div>
     {% else %}
-        <p class="text-muted">Henüz bir analiz yapılmadı. <a href="{% url 'matcher:analyze' %}">İlk analizini yap</a>.</p>
+        <p class="text-muted">No analyses yet. <a href="{% url 'matcher:analyze' %}">Run your first analysis</a>.</p>
     {% endif %}
 {% endblock %}
