@@ -1,6 +1,6 @@
 from django.shortcuts import get_object_or_404, redirect, render
 
-from .gemini_client import AnalysisError, analyze_fit
+from .groq_client import AnalysisError, analyze_fit
 from .forms import AnalyzeForm
 from .models import Analysis
 from .pdf_utils import PDFExtractionError, extract_text

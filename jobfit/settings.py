@@ -19,7 +19,7 @@ from dotenv import load_dotenv
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 # Loads variables from a local .env file (never committed) into the process
-# environment — this is how GEMINI_API_KEY reaches the google-genai SDK.
+# environment — this is how GROQ_API_KEY reaches the groq SDK.
 load_dotenv(BASE_DIR / '.env')
 
 
@@ -37,9 +37,9 @@ DEBUG = os.environ.get('DJANGO_DEBUG', 'True') == 'True'
 
 ALLOWED_HOSTS = [h for h in os.environ.get('DJANGO_ALLOWED_HOSTS', '').split(',') if h]
 
-# Used by matcher/gemini_client.py. The google-genai SDK also reads this env
-# var directly, but we expose it here too for visibility/consistency.
-GEMINI_API_KEY = os.environ.get('GEMINI_API_KEY', '')
+# Used by matcher/groq_client.py. The groq SDK also reads this env var
+# directly, but we expose it here too for visibility/consistency.
+GROQ_API_KEY = os.environ.get('GROQ_API_KEY', '')
 
 
 # Application definition

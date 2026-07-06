@@ -5,7 +5,7 @@ from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import TestCase
 from django.urls import reverse
 
-from .gemini_client import AnalysisError
+from .groq_client import AnalysisError
 from .models import Analysis
 from .pdf_utils import PDFExtractionError, extract_text
 
