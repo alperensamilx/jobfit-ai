@@ -5,13 +5,13 @@ from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import TestCase
 from django.urls import reverse
 
-from .claude_client import ClaudeAnalysisError
+from .gemini_client import AnalysisError
 from .models import Analysis
 from .pdf_utils import PDFExtractionError, extract_text
 
 FIXTURE_PDF = Path(__file__).parent / 'test_fixtures' / 'sample_cv.pdf'
 
-FAKE_CLAUDE_RESULT = {
+FAKE_ANALYSIS_RESULT = {
     'match_score': 82,
     'strengths': ['4 years of backend experience', 'Django and PostgreSQL match the stack'],
     'missing_skills': ['No mention of Kubernetes'],
@@ -54,7 +54,7 @@ class AnalyzeViewTests(TestCase):
 
     @patch('matcher.views.analyze_fit')
     def test_successful_analysis_creates_record_and_redirects(self, mock_analyze_fit):
-        mock_analyze_fit.return_value = FAKE_CLAUDE_RESULT
+        mock_analyze_fit.return_value = FAKE_ANALYSIS_RESULT
 
         response = self.client.post(reverse('matcher:analyze'), {
             'cv': make_cv_upload(), 'job_description': 'We need a backend engineer with Django experience.',
@@ -63,16 +63,16 @@ class AnalyzeViewTests(TestCase):
         self.assertEqual(Analysis.objects.count(), 1)
         analysis = Analysis.objects.first()
         self.assertEqual(analysis.match_score, 82)
-        self.assertEqual(analysis.strengths, FAKE_CLAUDE_RESULT['strengths'])
-        self.assertEqual(analysis.missing_skills, FAKE_CLAUDE_RESULT['missing_skills'])
+        self.assertEqual(analysis.strengths, FAKE_ANALYSIS_RESULT['strengths'])
+        self.assertEqual(analysis.missing_skills, FAKE_ANALYSIS_RESULT['missing_skills'])
         self.assertIn('Jane Doe', analysis.cv_text)
         self.assertRedirects(response, reverse('matcher:result', args=[analysis.pk]))
 
         mock_analyze_fit.assert_called_once()
 
     @patch('matcher.views.analyze_fit')
-    def test_claude_error_shows_message_without_saving(self, mock_analyze_fit):
-        mock_analyze_fit.side_effect = ClaudeAnalysisError('API is down')
+    def test_api_error_shows_message_without_saving(self, mock_analyze_fit):
+        mock_analyze_fit.side_effect = AnalysisError('API is down')
 
         response = self.client.post(reverse('matcher:analyze'), {
             'cv': make_cv_upload(), 'job_description': 'Some job posting.',
@@ -84,7 +84,7 @@ class AnalyzeViewTests(TestCase):
 
     def test_score_is_clamped_to_0_100(self):
         with patch('matcher.views.analyze_fit') as mock_analyze_fit:
-            mock_analyze_fit.return_value = {**FAKE_CLAUDE_RESULT, 'match_score': 150}
+            mock_analyze_fit.return_value = {**FAKE_ANALYSIS_RESULT, 'match_score': 150}
             self.client.post(reverse('matcher:analyze'), {
                 'cv': make_cv_upload(), 'job_description': 'Some job posting.',
             })
@@ -98,9 +98,9 @@ class ResultAndHistoryViewTests(TestCase):
             cv_text='Jane Doe, Python, Django',
             job_description='Backend engineer wanted.',
             match_score=82,
-            strengths=FAKE_CLAUDE_RESULT['strengths'],
-            missing_skills=FAKE_CLAUDE_RESULT['missing_skills'],
-            summary=FAKE_CLAUDE_RESULT['summary'],
+            strengths=FAKE_ANALYSIS_RESULT['strengths'],
+            missing_skills=FAKE_ANALYSIS_RESULT['missing_skills'],
+            summary=FAKE_ANALYSIS_RESULT['summary'],
         )
 
     def test_result_view_shows_score_and_details(self):

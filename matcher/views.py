@@ -1,6 +1,6 @@
 from django.shortcuts import get_object_or_404, redirect, render
 
-from .claude_client import ClaudeAnalysisError, analyze_fit
+from .gemini_client import AnalysisError, analyze_fit
 from .forms import AnalyzeForm
 from .models import Analysis
 from .pdf_utils import PDFExtractionError, extract_text
@@ -21,7 +21,7 @@ def analyze_view(request):
 
             try:
                 result = analyze_fit(cv_text, job_description)
-            except ClaudeAnalysisError as exc:
+            except AnalysisError as exc:
                 form.add_error(None, str(exc))
                 return render(request, 'matcher/analyze.html', {'form': form})
 

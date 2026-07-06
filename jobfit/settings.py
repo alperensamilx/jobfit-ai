@@ -19,7 +19,7 @@ from dotenv import load_dotenv
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 # Loads variables from a local .env file (never committed) into the process
-# environment — this is how ANTHROPIC_API_KEY reaches the anthropic SDK.
+# environment — this is how GEMINI_API_KEY reaches the google-genai SDK.
 load_dotenv(BASE_DIR / '.env')
 
 
@@ -37,10 +37,9 @@ DEBUG = os.environ.get('DJANGO_DEBUG', 'True') == 'True'
 
 ALLOWED_HOSTS = [h for h in os.environ.get('DJANGO_ALLOWED_HOSTS', '').split(',') if h]
 
-# Used by matcher/claude_client.py. The anthropic SDK also reads this env var
-# directly, but we expose it here too so we can fail with a clear error early
-# if it's missing, instead of a confusing error deep inside an API call.
-ANTHROPIC_API_KEY = os.environ.get('ANTHROPIC_API_KEY', '')
+# Used by matcher/gemini_client.py. The google-genai SDK also reads this env
+# var directly, but we expose it here too for visibility/consistency.
+GEMINI_API_KEY = os.environ.get('GEMINI_API_KEY', '')
 
 
 # Application definition
