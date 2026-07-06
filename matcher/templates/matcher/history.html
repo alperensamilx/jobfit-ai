@@ -1,0 +1,26 @@
+{% extends 'matcher/base.html' %}
+{% block title %}JobFit AI - Geçmiş{% endblock %}
+{% block content %}
+    <h1 class="h4 mb-3">Geçmiş Analizler</h1>
+
+    {% if analyses %}
+        <div class="list-group">
+            {% for analysis in analyses %}
+                <a href="{% url 'matcher:result' analysis.pk %}" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+                    <div>
+                        <div class="fw-semibold">{{ analysis.cv_filename }}</div>
+                        <div class="small text-muted">{{ analysis.created_at|date:"d.m.Y H:i" }}</div>
+                    </div>
+                    <span class="badge rounded-pill
+                        {% if analysis.match_score >= 70 %}bg-success
+                        {% elif analysis.match_score >= 40 %}bg-warning text-dark
+                        {% else %}bg-danger{% endif %}">
+                        %{{ analysis.match_score }}
+                    </span>
+                </a>
+            {% endfor %}
+        </div>
+    {% else %}
+        <p class="text-muted">Henüz bir analiz yapılmadı. <a href="{% url 'matcher:analyze' %}">İlk analizini yap</a>.</p>
+    {% endif %}
+{% endblock %}

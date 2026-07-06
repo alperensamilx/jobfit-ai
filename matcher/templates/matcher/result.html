@@ -1,0 +1,64 @@
+{% extends 'matcher/base.html' %}
+{% block title %}JobFit AI - Sonuç{% endblock %}
+{% block content %}
+    <p><a href="{% url 'matcher:analyze' %}">&larr; Yeni analiz</a></p>
+
+    <div class="card shadow-sm mb-4">
+        <div class="card-body">
+            <h1 class="h4">{{ analysis.cv_filename }}</h1>
+            <p class="text-muted small">{{ analysis.created_at|date:"d.m.Y H:i" }}</p>
+
+            <div class="d-flex align-items-center gap-3 my-3">
+                <div class="display-6 fw-bold
+                    {% if analysis.match_score >= 70 %}text-success
+                    {% elif analysis.match_score >= 40 %}text-warning
+                    {% else %}text-danger{% endif %}">
+                    %{{ analysis.match_score }}
+                </div>
+                <div class="flex-grow-1">
+                    <div class="progress" style="height: 10px;">
+                        <div class="progress-bar
+                            {% if analysis.match_score >= 70 %}bg-success
+                            {% elif analysis.match_score >= 40 %}bg-warning
+                            {% else %}bg-danger{% endif %}"
+                            style="width: {{ analysis.match_score }}%;"></div>
+                    </div>
+                    <div class="small text-muted mt-1">Uyum Skoru</div>
+                </div>
+            </div>
+
+            <p>{{ analysis.summary }}</p>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-6 mb-4">
+            <div class="card shadow-sm h-100">
+                <div class="card-body">
+                    <h2 class="h6 text-success">✓ Güçlü Yönler</h2>
+                    <ul class="mb-0">
+                        {% for item in analysis.strengths %}
+                            <li>{{ item }}</li>
+                        {% empty %}
+                            <li class="text-muted">Belirgin bir güçlü yön bulunamadı.</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6 mb-4">
+            <div class="card shadow-sm h-100">
+                <div class="card-body">
+                    <h2 class="h6 text-danger">✗ Eksik Beceriler</h2>
+                    <ul class="mb-0">
+                        {% for item in analysis.missing_skills %}
+                            <li>{{ item }}</li>
+                        {% empty %}
+                            <li class="text-muted">Eksik belirgin bir beceri bulunamadı.</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

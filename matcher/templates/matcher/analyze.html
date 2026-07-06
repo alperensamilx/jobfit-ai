@@ -1,0 +1,29 @@
+{% extends 'matcher/base.html' %}
+{% block title %}JobFit AI - Yeni Analiz{% endblock %}
+{% block content %}
+    <div class="card shadow-sm">
+        <div class="card-body">
+            <h1 class="h4 mb-3">CV'ni bir iş ilanıyla karşılaştır</h1>
+            <p class="text-muted">CV'ni (PDF) yükle, iş ilanının metnini yapıştır — Claude uyum skorunu, güçlü yönlerini ve eksik becerilerini analiz etsin.</p>
+
+            {% if form.non_field_errors %}
+                <div class="alert alert-danger">{{ form.non_field_errors }}</div>
+            {% endif %}
+
+            <form method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                <div class="mb-3">
+                    <label for="{{ form.cv.id_for_label }}" class="form-label">{{ form.cv.label }}</label>
+                    {{ form.cv }}
+                    {% if form.cv.errors %}<div class="text-danger small mt-1">{{ form.cv.errors }}</div>{% endif %}
+                </div>
+                <div class="mb-3">
+                    <label for="{{ form.job_description.id_for_label }}" class="form-label">{{ form.job_description.label }}</label>
+                    {{ form.job_description }}
+                    {% if form.job_description.errors %}<div class="text-danger small mt-1">{{ form.job_description.errors }}</div>{% endif %}
+                </div>
+                <button type="submit" class="btn btn-primary">Analiz Et</button>
+            </form>
+        </div>
+    </div>
+{% endblock %}
