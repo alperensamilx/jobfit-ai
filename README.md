@@ -19,7 +19,7 @@ Upload your CV (PDF) and a job posting's text — an LLM (Llama 3.3 70B via Groq
 - **PDF processing**: pypdf (in memory, file never written to disk)
 - **AI**: Groq API (`llama-3.3-70b-versatile`, free tier, no credit card required), structured JSON output via tool calling
 - **UI**: Bootstrap 5 (CDN)
-- **Database**: Postgres (production), falls back to SQLite for local development if `DATABASE_URL` isn't set
+- **Database**: SQLite (both local development and production — see the Deployment section for why)
 
 ## Setup
 
@@ -48,7 +48,9 @@ python manage.py test matcher
 
 ## Deployment
 
-`render.yaml` defines a [Render](https://render.com) Blueprint with Postgres + a web service. Unlike OrderLens, no Redis/worker is needed here — the Groq call is synchronous. `GROQ_API_KEY` isn't auto-generated (it's a secret), so you'll be prompted to enter it when applying the Blueprint.
+`render.yaml` defines a [Render](https://render.com) Blueprint with a single web service — no Postgres, no Redis/worker. Unlike OrderLens, no async queue is needed here since the Groq call is synchronous. `GROQ_API_KEY` isn't auto-generated (it's a secret), so you'll be prompted to enter it when applying the Blueprint.
+
+**Why SQLite instead of Postgres:** Render's free plan allows only one free Postgres database per account, and that slot is already used by [OrderLens](https://github.com/alperensamilx/orderlens)'s `orderlens-db`. Rather than pay for a second database for a demo project, JobFit AI runs on SQLite. The trade-off: Render's free web dyno's disk isn't persistent across redeploys, so the analysis history table resets whenever new code is pushed. Each analysis itself still works correctly in the meantime — only old history rows are affected, not the CV/job-posting comparison itself. If this app needed durable history in production, the fix would be provisioning a real Postgres instance (paid, since the free tier is already spoken for).
 
 ## Why no Celery/async?
 
