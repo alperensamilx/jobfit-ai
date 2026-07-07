@@ -19,7 +19,7 @@ Upload your CV (PDF) and a job posting's text — an LLM (Llama 3.3 70B via Groq
 - **PDF processing**: pypdf (in memory, file never written to disk)
 - **AI**: Groq API (`llama-3.3-70b-versatile`, free tier, no credit card required), structured JSON output via tool calling
 - **UI**: Bootstrap 5 (CDN)
-- **Database**: SQLite
+- **Database**: Postgres (production), falls back to SQLite for local development if `DATABASE_URL` isn't set
 
 ## Setup
 
@@ -45,6 +45,10 @@ python manage.py test matcher
 ```
 
 9 tests: PDF text extraction (with valid and corrupted files), form validation, the full analysis flow, score clamping (0-100), and the result/history pages. The model API is **never actually called during tests** — `analyze_fit` is mocked, so the tests run free, fast, and deterministic.
+
+## Deployment
+
+`render.yaml` defines a [Render](https://render.com) Blueprint with Postgres + a web service. Unlike OrderLens, no Redis/worker is needed here — the Groq call is synchronous. `GROQ_API_KEY` isn't auto-generated (it's a secret), so you'll be prompted to enter it when applying the Blueprint.
 
 ## Why no Celery/async?
 
