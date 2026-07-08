@@ -2,6 +2,8 @@
 
 Upload your CV (PDF) and a job posting's text — an LLM (Llama 3.3 70B via Groq) compares the two and produces a structured fit report (0-100 score, strengths, missing skills, short summary).
 
+**Live demo:** [jobfit-ai-0n3m.onrender.com](https://jobfit-ai-0n3m.onrender.com) — upload any CV PDF and paste a job posting to try it. (The free Render plan spins down when idle, so the first request may take ~30-50 seconds.)
+
 ## How it works
 
 1. Upload your CV as a PDF, paste the full job posting text.
@@ -11,7 +13,14 @@ Upload your CV (PDF) and a job posting's text — an LLM (Llama 3.3 70B via Groq
 
 ## Screenshots
 
-> To be added to the `screenshots/` folder.
+**Upload** — submit your CV (PDF) and paste the job posting text
+![Upload](screenshots/1_upload.png)
+
+**Result** — fit score, strengths, and missing skills
+![Result](screenshots/2_result.png)
+
+**History** — revisit past analyses
+![History](screenshots/3_history.png)
 
 ## Tech Stack
 
